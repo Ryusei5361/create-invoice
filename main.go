@@ -40,8 +40,8 @@ func main() {
 	}
 
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
-	readRange1 := "大村 2023/02!C9"
-	readRange2 := "大村 2023/02!A21:E23"
+	readRange1 := "大村 2023/02!C9"      // 勤務時間
+	readRange2 := "大村 2023/02!A21:E23" // 交通費情報
 
 	// 勤務時間を取得
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
@@ -64,6 +64,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	fmt.Println(workHour)
 
 	var station []string
 	var count []string
@@ -78,7 +79,7 @@ func main() {
 			//	row.Values[2].FormattedValue, row.Values[3].FormattedValue, row.Values[4].FormattedValue)
 		}
 	}
-	fmt.Println(station[0])
+	//fmt.Println(station[0])
 
 	// 更新範囲と更新値の指定
 	valueRange1 := "N4"
@@ -89,11 +90,27 @@ func main() {
 	values2 := [][]interface{}{
 		{payDate},
 	}
-	valueRange3 := "A20:A22"
+	valueRange3 := "J18"
 	values3 := [][]interface{}{
+		{workHours},
+	}
+	valueRange4 := "A20:A22"
+	values4 := [][]interface{}{
 		{station[0]},
 		{station[1]},
 		{station[2]},
+	}
+	valueRange5 := "J20:J22"
+	values5 := [][]interface{}{
+		{count[0]},
+		{count[1]},
+		{count[2]},
+	}
+	valueRange6 := "L20:L22"
+	values6 := [][]interface{}{
+		{price[0]},
+		{price[1]},
+		{price[2]},
 	}
 
 	rb := &sheets.BatchUpdateValuesRequest{
@@ -113,6 +130,21 @@ func main() {
 				Range:          valueRange3,
 				MajorDimension: "ROWS",
 				Values:         values3,
+			},
+			{
+				Range:          valueRange4,
+				MajorDimension: "ROWS",
+				Values:         values4,
+			},
+			{
+				Range:          valueRange5,
+				MajorDimension: "ROWS",
+				Values:         values5,
+			},
+			{
+				Range:          valueRange6,
+				MajorDimension: "ROWS",
+				Values:         values6,
 			},
 		},
 	}
