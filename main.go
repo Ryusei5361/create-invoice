@@ -52,20 +52,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//spreadSheet := &sheets.Spreadsheet{
-	//	Properties: &sheets.SpreadsheetProperties{
-	//		Title:    "New Spreadsheet", // スプレッドシートの名前
-	//		Locale:   "ja_JP",           // ロケール
-	//		TimeZone: "Asia/Tokyo",      // タイムゾーン
-	//	},
-	//}
-
-	// スプレッドシートを新規作成
-	//createResponse, err := srv.Spreadsheets.Create(spreadSheet).Do()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
 	readRange1 := "大村 2023/02!C9"
 	readRange2 := "大村 2023/02!A21:E23"
