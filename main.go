@@ -64,22 +64,21 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(workHour)
 
-	var station []string
-	var count []string
-	var price []string
+	var (
+		station []string
+		count   []string
+		price   []string
+	)
+
 	for _, s := range trsptExpnss.Sheets {
 		for _, row := range s.Data[0].RowData {
 			station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
 				row.Values[2].FormattedValue))
 			count = append(count, row.Values[3].FormattedValue)
 			price = append(price, row.Values[4].FormattedValue)
-			//fmt.Printf("%v %v %v %v %v\n", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
-			//	row.Values[2].FormattedValue, row.Values[3].FormattedValue, row.Values[4].FormattedValue)
 		}
 	}
-	//fmt.Println(station[0])
 
 	// 更新範囲と更新値の指定
 	valueRange1 := "N4"
@@ -106,12 +105,12 @@ func main() {
 		{count[1]},
 		{count[2]},
 	}
-	valueRange6 := "L20:L22"
-	values6 := [][]interface{}{
-		{price[0]},
-		{price[1]},
-		{price[2]},
-	}
+	//valueRange6 := "L20:L22"
+	//values6 := [][]interface{}{
+	//	{price[0]},
+	//	{price[1]},
+	//	{price[2]},
+	//}
 
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
@@ -142,9 +141,13 @@ func main() {
 				Values:         values5,
 			},
 			{
-				Range:          valueRange6,
+				Range:          "L20:L22",
 				MajorDimension: "ROWS",
-				Values:         values6,
+				Values: [][]interface{}{
+					{price[0]},
+					{price[1]},
+					{price[2]},
+				},
 			},
 		},
 	}
