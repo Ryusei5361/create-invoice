@@ -33,8 +33,7 @@ func main() {
 	// 給料日
 	payDate := fmt.Sprintf("%d/%d/15", now.Year(), int(now.Month()))
 
-	//fmt.Println(date)
-
+	// コンストラクタ?を作成
 	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
 	if err != nil {
 		log.Fatal(err)
@@ -44,49 +43,67 @@ func main() {
 	readRange1 := "大村 2023/02!C9"
 	readRange2 := "大村 2023/02!A21:E23"
 
-	// 値を取得
+	// 勤務時間を取得
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// 交通費の情報を取得
 	trsptExpnss, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange2)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// スプレットシートから読み込んだセルの値、今回だと勤務時間
-	var workingHours = wrkHr.Sheets[0].Data[0].RowData[0].Values[0].FormattedValue
+	workHour := wrkHr.Sheets[0].Data[0].RowData[0].Values[0].FormattedValue
 	// 25:50 のように、: が含まれる文字列を小数に変換するために : から . へ置き換える
-	workingHours = strings.Replace(workingHours, ":", ".", 1)
+	workHour = strings.Replace(workHour, ":", ".", 1)
 	// 小数として扱いたいので、string 型を float64 型に変換
-	newWorkingHours, err := strconv.ParseFloat(workingHours, 64)
+	workHours, err := strconv.ParseFloat(workHour, 64)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(newWorkingHours)
 
+	var station []string
+	var count []string
+	var price []string
 	for _, s := range trsptExpnss.Sheets {
 		for _, row := range s.Data[0].RowData {
-			fmt.Printf("%v %v %v %v %v\n", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
-				row.Values[2].FormattedValue, row.Values[3].FormattedValue, row.Values[4].FormattedValue)
+			station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+				row.Values[2].FormattedValue))
+			count = append(count, row.Values[3].FormattedValue)
+			price = append(price, row.Values[4].FormattedValue)
+			//fmt.Printf("%v %v %v %v %v\n", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+			//	row.Values[2].FormattedValue, row.Values[3].FormattedValue, row.Values[4].FormattedValue)
 		}
 	}
+	fmt.Println(station[0])
 
 	// 更新範囲と更新値の指定
-	valueRange2 := "N4"
-	values2 := [][]interface{}{
+	valueRange1 := "N4"
+	values1 := [][]interface{}{
 		{billdate},
 	}
-
-	valueRange3 := "M15"
-	values3 := [][]interface{}{
+	valueRange2 := "M15"
+	values2 := [][]interface{}{
 		{payDate},
+	}
+	valueRange3 := "A20:A22"
+	values3 := [][]interface{}{
+		{station[0]},
+		{station[1]},
+		{station[2]},
 	}
 
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
 		Data: []*sheets.ValueRange{
+			{
+				Range:          valueRange1,
+				MajorDimension: "ROWS",
+				Values:         values1,
+			},
 			{
 				Range:          valueRange2,
 				MajorDimension: "ROWS",
