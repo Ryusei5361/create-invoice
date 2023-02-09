@@ -6,38 +6,36 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 	"log"
-	"os"
 	"time"
 )
 
 var spreadsheetID1 = "1SAwRc11TMl9fc8243Es0HvL8ZK3SHa6nEyTprCBC6Bk"
 var spreadsheetID2 = "1jo4DVvChI5sNXFlyUhqF8oSmfTVyiryhiJy6KHkd_xw"
 
-type SheetClient struct {
-	srv           *sheets.Service
-	spreadsheetID string
-}
-
-func NewSheetClient(spreadsheetID string) (*SheetClient, error) {
-	credential := option.WithCredentialsFile("credentials/secret.json")
-	srv, err := sheets.NewService(context.TODO(), credential)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return &SheetClient{
-		srv:           srv,
-		spreadsheetID: spreadsheetID,
-	}, nil
-}
-
-func (s *SheetClient) Get(range_ string) (*sheets.Spreadsheet, error) {
-	resp, err := s.srv.Spreadsheets.Get(s.spreadsheetID).IncludeGridData(true).Ranges(range_).Do()
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
+//type SheetClient struct {
+//	srv           *sheets.Service
+//	spreadsheetID string
+//}
+//
+//func NewSheetClient(spreadsheetID string) (*SheetClient, error) {
+//	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	return &SheetClient{
+//		srv:           srv,
+//		spreadsheetID: spreadsheetID,
+//	}, nil
+//}
+//
+//func (s *SheetClient) Get(range_ string) (*sheets.Spreadsheet, error) {
+//	resp, err := s.srv.(s.spreadsheetID).IncludeGridData(true).Ranges(range_).Do()
+//	if err != nil {
+//		return nil, err
+//	}
+//	return resp, nil
+//}
 
 func main() {
 
@@ -47,7 +45,7 @@ func main() {
 
 	//fmt.Println(date)
 
-	client, err := NewSheetClient(os.Getenv(spreadsheetID1))
+	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,23 +53,23 @@ func main() {
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
 	readRange1 := "大村 2023/02!C9"
 	readRange2 := "大村 2023/02!A21:E23"
-
-	rg := &sheets.BatchGetValuesResponse{
-		ValueRanges: []*sheets.ValueRange{
-			{
-				Range:          readRange1,
-				MajorDimension: "ROWS",
-			},
-			{
-				Range:          readRange2,
-				MajorDimension: "ROWS",
-			},
-		},
-	}
+	//rR := &sheets.BatchGetValuesResponse{
+	//	ValueRanges: []*sheets.ValueRange{
+	//		{
+	//			Range:          "大村 2023/02!J18",
+	//			MajorDimension: "ROWS",
+	//		},
+	//		{
+	//			Range:          "大村 2023/02!A21:E23",
+	//			MajorDimension: "ROWS",
+	//		},
+	//	},
+	//}
+	//readRange2 := "大村 2023/02!A21:E23"
 
 	// 値を取得
-	value, err := client.Get(readRange1)
-	//resp, err := srv.Spreadsheets.Get(spreadsheetID1).IncludeGridData(true).Ranges(rg...).Do()
+	//value, err := client.Get(readRange1)
+	resp, err := srv.Spreadsheets.Get(spreadsheetID1).IncludeGridData(true).Ranges(readRange1).Ranges(readRange2).Do()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -85,8 +83,6 @@ func main() {
 			for _, value := range row.Values {
 				//fmt.Printf("%v %v %v %v %v\n", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
 				//	row.Values[2].FormattedValue, row.Values[3].FormattedValue, row.Values[4].FormattedValue)
-				//fmt.Println(value.EffectiveValue.StringValue)
-				//fmt.Println(value.UserEnteredValue.StringValue)
 				fmt.Println(value.FormattedValue)
 			}
 		}
@@ -101,7 +97,6 @@ func main() {
 	//if err != nil {
 	//	log.Fatalln(err)
 	//}
-
 	//fmt.Println(newWorkingHours)
 
 	// 請求書の勤務時間を書き込むセルを指定
@@ -115,11 +110,6 @@ func main() {
 	//}
 
 	// 更新範囲と更新値の指定
-	//valueRange1 := "J18"
-	//values1 := [][]interface{}{
-	//	{newWorkingHours},
-	//}
-
 	valueRange2 := "N4"
 	values2 := [][]interface{}{
 		{date},
@@ -130,19 +120,9 @@ func main() {
 		{transferredDate},
 	}
 
-	//valueRange4 := "A20:J22"
-	//values4 := [][]interface{}{
-	//	{transferredDate}, {transferredDate},
-	//}
-
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
 		Data: []*sheets.ValueRange{
-			//{
-			//	Range:          valueRange1,
-			//	MajorDimension: "ROWS",
-			//	Values:         values1,
-			//},
 			{
 				Range:          valueRange2,
 				MajorDimension: "ROWS",
@@ -153,11 +133,6 @@ func main() {
 				MajorDimension: "ROWS",
 				Values:         values3,
 			},
-			//{
-			//	Range:          valueRange4,
-			//	MajorDimension: "ROWS",
-			//	Values:         values4,
-			//},
 		},
 	}
 
@@ -165,16 +140,4 @@ func main() {
 	if err != nil {
 		return
 	}
-
-	//fmt.Println(vr)
-
-	// 書き込む
-	//_, err = srv.Spreadsheets.Values.Update(spreadsheetID2, writeRange1, vr).ValueInputOption("RAW").Do()
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-	//_, err = srv.Spreadsheets.Values.Update(spreadsheetID2, writeRange2, date).ValueInputOption("RAW").Do()
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
 }
