@@ -51,11 +51,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//credential := option.WithCredentialsFile("credentials/secret.json")
-	//srv, err := sheets.NewService(context.TODO(), credential)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 
 	//spreadSheet := &sheets.Spreadsheet{
 	//	Properties: &sheets.SpreadsheetProperties{
