@@ -11,25 +11,11 @@ import (
 	"time"
 )
 
+// 読み込むスプレットシートID
 var spreadsheetID1 = "1SAwRc11TMl9fc8243Es0HvL8ZK3SHa6nEyTprCBC6Bk"
+
+// 書き込むスプレットシートID
 var spreadsheetID2 = "1jo4DVvChI5sNXFlyUhqF8oSmfTVyiryhiJy6KHkd_xw"
-
-//type SheetClient struct {
-//	srv           *sheets.Service
-//	spreadsheetID string
-//}
-
-//func NewSheetClient(spreadsheetID string) (*SheetClient, error) {
-//	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	return &SheetClient{
-//		srv:           srv,
-//		spreadsheetID: spreadsheetID,
-//	}, nil
-//}
 
 func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, range_ string) (*sheets.Spreadsheet, error) {
 	resp, err := srv.Spreadsheets.Get(spreadsheetID).IncludeGridData(true).Ranges(range_).Do()
@@ -42,8 +28,10 @@ func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, range_ string) (
 func main() {
 
 	now := time.Now()
-	date := fmt.Sprintf("%d/%d/%d", now.Year(), int(now.Month()), now.Day())
-	transferredDate := fmt.Sprintf("%d/%d/15", now.Year(), int(now.Month()))
+	// 請求日
+	billdate := fmt.Sprintf("%d/%d/%d", now.Year(), int(now.Month()), now.Day())
+	// 給料日
+	payDate := fmt.Sprintf("%d/%d/15", now.Year(), int(now.Month()))
 
 	//fmt.Println(date)
 
@@ -55,22 +43,8 @@ func main() {
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
 	readRange1 := "大村 2023/02!C9"
 	readRange2 := "大村 2023/02!A21:E23"
-	//rR := &sheets.BatchGetValuesResponse{
-	//	ValueRanges: []*sheets.ValueRange{
-	//		{
-	//			Range:          "大村 2023/02!J18",
-	//			MajorDimension: "ROWS",
-	//		},
-	//		{
-	//			Range:          "大村 2023/02!A21:E23",
-	//			MajorDimension: "ROWS",
-	//		},
-	//	},
-	//}
 
 	// 値を取得
-	//value, err := client.Get(readRange1)
-	//resp, err := srv.Spreadsheets.Get(spreadsheetID1).IncludeGridData(true).Ranges(readRange1).Ranges(readRange2).Do()
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
 	if err != nil {
 		log.Fatal(err)
@@ -99,25 +73,15 @@ func main() {
 		}
 	}
 
-	// 請求書の勤務時間を書き込むセルを指定
-	//writeRange1 := "請求書!J18"
-	//writeRange2 := "請求書!M15"
-	// 請求書の勤務時間載せるに書き込む内容
-	//vr := &sheets.ValueRange{
-	//	Values: [][]interface{}{
-	//		{newWorkingHours},
-	//	},
-	//}
-
 	// 更新範囲と更新値の指定
 	valueRange2 := "N4"
 	values2 := [][]interface{}{
-		{date},
+		{billdate},
 	}
 
 	valueRange3 := "M15"
 	values3 := [][]interface{}{
-		{transferredDate},
+		{payDate},
 	}
 
 	rb := &sheets.BatchUpdateValuesRequest{
