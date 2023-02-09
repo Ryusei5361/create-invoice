@@ -6,6 +6,8 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -16,7 +18,7 @@ var spreadsheetID2 = "1jo4DVvChI5sNXFlyUhqF8oSmfTVyiryhiJy6KHkd_xw"
 //	srv           *sheets.Service
 //	spreadsheetID string
 //}
-//
+
 //func NewSheetClient(spreadsheetID string) (*SheetClient, error) {
 //	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
 //	if err != nil {
@@ -28,14 +30,14 @@ var spreadsheetID2 = "1jo4DVvChI5sNXFlyUhqF8oSmfTVyiryhiJy6KHkd_xw"
 //		spreadsheetID: spreadsheetID,
 //	}, nil
 //}
-//
-//func (s *SheetClient) Get(range_ string) (*sheets.Spreadsheet, error) {
-//	resp, err := s.srv.(s.spreadsheetID).IncludeGridData(true).Ranges(range_).Do()
-//	if err != nil {
-//		return nil, err
-//	}
-//	return resp, nil
-//}
+
+func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, range_ string) (*sheets.Spreadsheet, error) {
+	resp, err := srv.Spreadsheets.Get(spreadsheetID).IncludeGridData(true).Ranges(range_).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
 
 func main() {
 
@@ -65,39 +67,37 @@ func main() {
 	//		},
 	//	},
 	//}
-	//readRange2 := "大村 2023/02!A21:E23"
 
 	// 値を取得
 	//value, err := client.Get(readRange1)
-	resp, err := srv.Spreadsheets.Get(spreadsheetID1).IncludeGridData(true).Ranges(readRange1).Ranges(readRange2).Do()
+	//resp, err := srv.Spreadsheets.Get(spreadsheetID1).IncludeGridData(true).Ranges(readRange1).Ranges(readRange2).Do()
+	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// interface 型のフォーマット演算子 %#v
-	//fmt.Printf("%#v\n", resp)
 
-	//station = [];
-	// セル情報の取得
-	for _, s := range resp.Sheets {
-		for _, row := range s.Data[0].RowData {
-			for _, value := range row.Values {
-				//fmt.Printf("%v %v %v %v %v\n", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
-				//	row.Values[2].FormattedValue, row.Values[3].FormattedValue, row.Values[4].FormattedValue)
-				fmt.Println(value.FormattedValue)
-			}
-		}
+	trsptExpnss, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange2)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// スプレットシートから読み込んだセルの値、今回だと勤務時間
-	//var workingHours = resp.Sheets[0].Data[0].RowData[0].Values[0].FormattedValue
-	//// 25:50 のように、: が含まれる文字列を小数に変換するために : から . へ置き換える
-	//workingHours = strings.Replace(workingHours, ":", ".", 1)
-	//// 小数として扱いたいので、string 型を float64 型に変換
-	//newWorkingHours, err := strconv.ParseFloat(workingHours, 64)
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-	//fmt.Println(newWorkingHours)
+	var workingHours = wrkHr.Sheets[0].Data[0].RowData[0].Values[0].FormattedValue
+	// 25:50 のように、: が含まれる文字列を小数に変換するために : から . へ置き換える
+	workingHours = strings.Replace(workingHours, ":", ".", 1)
+	// 小数として扱いたいので、string 型を float64 型に変換
+	newWorkingHours, err := strconv.ParseFloat(workingHours, 64)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(newWorkingHours)
+
+	for _, s := range trsptExpnss.Sheets {
+		for _, row := range s.Data[0].RowData {
+			fmt.Printf("%v %v %v %v %v\n", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+				row.Values[2].FormattedValue, row.Values[3].FormattedValue, row.Values[4].FormattedValue)
+		}
+	}
 
 	// 請求書の勤務時間を書き込むセルを指定
 	//writeRange1 := "請求書!J18"
