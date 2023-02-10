@@ -25,6 +25,8 @@ func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, range_ string) (
 	return resp, nil
 }
 
+// TODO: スプレットシートのタイトルを変更できるようにする。
+// TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
 func main() {
 
 	now := time.Now()
@@ -41,7 +43,7 @@ func main() {
 
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
 	readRange1 := "大村 2023/02!C9"      // 勤務時間
-	readRange2 := "大村 2023/02!A21:E23" // 交通費情報
+	readRange2 := "大村 2023/02!A21:E26" // 交通費情報 (多めにセルを指定しておく)
 
 	// 勤務時間を取得
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
@@ -73,12 +75,22 @@ func main() {
 
 	for _, s := range trsptExpnss.Sheets {
 		for _, row := range s.Data[0].RowData {
-			station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
-				row.Values[2].FormattedValue))
-			count = append(count, row.Values[3].FormattedValue)
-			price = append(price, row.Values[4].FormattedValue)
+			if row.Values[0].FormattedValue != "" {
+				station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+					row.Values[2].FormattedValue))
+				count = append(count, row.Values[3].FormattedValue)
+				price = append(price, row.Values[4].FormattedValue)
+			}
+
 		}
 	}
+	fmt.Println(station)
+
+	//sprdSht := &sheets.BatchUpdateSpreadsheetRequest{
+	//	Properties: &sheets.SpreadsheetProperties{
+	//		Title: "New Spreadsheet", // スプレッドシートの名前
+	//	},
+	//}
 
 	// 更新範囲と更新値の指定
 	valueRange1 := "N4"
@@ -153,6 +165,7 @@ func main() {
 	}
 
 	_, err = srv.Spreadsheets.Values.BatchUpdate(spreadsheetID2, rb).Do()
+	//_, err = srv.Spreadsheets.Values.BatchUpdate(spreadsheetID2, sprdSht).Do()
 	if err != nil {
 		return
 	}
