@@ -43,7 +43,7 @@ func main() {
 
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
 	readRange1 := "大村 2023/02!C9"      // 勤務時間
-	readRange2 := "大村 2023/02!A21:E26" // 交通費情報 (多めにセルを指定しておく)
+	readRange2 := "大村 2023/02!A20:E28" // 交通費情報 (多めにセルを指定しておく)
 
 	// 勤務時間を取得
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
@@ -75,13 +75,10 @@ func main() {
 
 	for _, s := range trsptExpnss.Sheets {
 		for _, row := range s.Data[0].RowData {
-			if row.Values[0].FormattedValue != "" {
-				station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
-					row.Values[2].FormattedValue))
-				count = append(count, row.Values[3].FormattedValue)
-				price = append(price, row.Values[4].FormattedValue)
-			}
-
+			station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+				row.Values[2].FormattedValue))
+			count = append(count, row.Values[3].FormattedValue)
+			price = append(price, row.Values[4].FormattedValue)
 		}
 	}
 	fmt.Println(station)
@@ -105,24 +102,42 @@ func main() {
 	values3 := [][]interface{}{
 		{workHours},
 	}
-	valueRange4 := "A20:A22"
+	valueRange4 := "A20:A28"
 	values4 := [][]interface{}{
 		{station[0]},
 		{station[1]},
 		{station[2]},
+		{station[3]},
+		{station[4]},
+		{station[5]},
+		{station[6]},
+		{station[7]},
+		{station[8]},
 	}
-	valueRange5 := "J20:J22"
+	valueRange5 := "J20:J28"
 	values5 := [][]interface{}{
 		{count[0]},
 		{count[1]},
 		{count[2]},
+		{count[3]},
+		{count[4]},
+		{count[5]},
+		{count[6]},
+		{count[7]},
+		{count[8]},
 	}
-	//valueRange6 := "L20:L22"
-	//values6 := [][]interface{}{
-	//	{price[0]},
-	//	{price[1]},
-	//	{price[2]},
-	//}
+	valueRange6 := "L20:L28"
+	values6 := [][]interface{}{
+		{price[0]},
+		{price[1]},
+		{price[2]},
+		{price[3]},
+		{price[4]},
+		{price[5]},
+		{price[6]},
+		{price[7]},
+		{price[8]},
+	}
 
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
@@ -153,13 +168,9 @@ func main() {
 				Values:         values5,
 			},
 			{
-				Range:          "L20:L22",
+				Range:          valueRange6,
 				MajorDimension: "ROWS",
-				Values: [][]interface{}{
-					{price[0]},
-					{price[1]},
-					{price[2]},
-				},
+				Values:         values6,
 			},
 		},
 	}
