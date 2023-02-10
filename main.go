@@ -17,8 +17,8 @@ var spreadsheetID1 = "1SAwRc11TMl9fc8243Es0HvL8ZK3SHa6nEyTprCBC6Bk"
 // 書き込むスプレットシートID
 var spreadsheetID2 = "1jo4DVvChI5sNXFlyUhqF8oSmfTVyiryhiJy6KHkd_xw"
 
-func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, range_ string) (*sheets.Spreadsheet, error) {
-	resp, err := srv.Spreadsheets.Get(spreadsheetID).IncludeGridData(true).Ranges(range_).Do()
+func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*sheets.Spreadsheet, error) {
+	resp, err := srv.Spreadsheets.Get(spreadsheetID).IncludeGridData(true).Ranges(rg).Do()
 	if err != nil {
 		return nil, err
 	}
@@ -31,9 +31,11 @@ func main() {
 
 	now := time.Now()
 	// 請求日
-	billdate := fmt.Sprintf("%d/%d/%d", now.Year(), int(now.Month()), now.Day())
+	billDate := fmt.Sprintf("%d/%d/%d", now.Year(), int(now.Month()), now.Day())
+	// 請求月
+	billMonth := fmt.Sprintf("%d/0%d", now.Year(), int(now.Month()))
 	// 給料日
-	payDate := fmt.Sprintf("%d/%d/15", now.Year(), int(now.Month()))
+	payDate := fmt.Sprintf("%s/15", billMonth)
 
 	// コンストラクタ?を作成
 	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
@@ -42,8 +44,10 @@ func main() {
 	}
 
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
-	readRange1 := "大村 2023/02!C9"      // 勤務時間
-	readRange2 := "大村 2023/02!A20:E28" // 交通費情報 (多めにセルを指定しておく)
+	readRange1 := fmt.Sprintf("大村 %s!C9", billMonth)      // 勤務時間
+	readRange2 := fmt.Sprintf("大村 %s!A20:E28", billMonth) // 交通費情報 (多めにセルを指定しておく)
+
+	//fmt.Printf("%T\n", readRange1)
 
 	// 勤務時間を取得
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
@@ -81,7 +85,7 @@ func main() {
 			price = append(price, row.Values[4].FormattedValue)
 		}
 	}
-	fmt.Println(station)
+	//fmt.Println(station)
 
 	//sprdSht := &sheets.BatchUpdateSpreadsheetRequest{
 	//	Properties: &sheets.SpreadsheetProperties{
@@ -92,7 +96,7 @@ func main() {
 	// 更新範囲と更新値の指定
 	valueRange1 := "N4"
 	values1 := [][]interface{}{
-		{billdate},
+		{billDate},
 	}
 	valueRange2 := "M15"
 	values2 := [][]interface{}{
