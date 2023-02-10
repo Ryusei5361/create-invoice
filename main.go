@@ -72,15 +72,18 @@ func main() {
 	}
 
 	var (
-		station []string
+		station [][]interface{}
 		count   []string
 		price   []string
 	)
 
 	for _, s := range trsptExpnss.Sheets {
 		for _, row := range s.Data[0].RowData {
-			station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
-				row.Values[2].FormattedValue))
+			staion := [][]interface{}{
+				{station},
+				{fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+					row.Values[2].FormattedValue)},
+			}
 			count = append(count, row.Values[3].FormattedValue)
 			price = append(price, row.Values[4].FormattedValue)
 		}
@@ -94,87 +97,123 @@ func main() {
 	//}
 
 	// 更新範囲と更新値の指定
-	valueRange1 := "N4"
-	values1 := [][]interface{}{
-		{billDate},
-	}
-	valueRange2 := "M15"
-	values2 := [][]interface{}{
-		{payDate},
-	}
-	valueRange3 := "J18"
-	values3 := [][]interface{}{
-		{workHours},
-	}
-	valueRange4 := "A20:A28"
-	values4 := [][]interface{}{
-		{station[0]},
-		{station[1]},
-		{station[2]},
-		{station[3]},
-		{station[4]},
-		{station[5]},
-		{station[6]},
-		{station[7]},
-		{station[8]},
-	}
-	valueRange5 := "J20:J28"
-	values5 := [][]interface{}{
-		{count[0]},
-		{count[1]},
-		{count[2]},
-		{count[3]},
-		{count[4]},
-		{count[5]},
-		{count[6]},
-		{count[7]},
-		{count[8]},
-	}
-	valueRange6 := "L20:L28"
-	values6 := [][]interface{}{
-		{price[0]},
-		{price[1]},
-		{price[2]},
-		{price[3]},
-		{price[4]},
-		{price[5]},
-		{price[6]},
-		{price[7]},
-		{price[8]},
-	}
+	//valueRange1 := "N4"
+	//values1 := [][]interface{}{
+	//	{billDate},
+	//}
+	//valueRange2 := "M15"
+	//values2 := [][]interface{}{
+	//	{payDate},
+	//}
+	//valueRange3 := "J18"
+	//values3 := [][]interface{}{
+	//	{workHours},
+	//}
+	//valueRange4 := "A20:A28"
+	//values4 := [][]interface{}{
+	//	{station[0]},
+	//	{station[1]},
+	//	{station[2]},
+	//	{station[3]},
+	//	{station[4]},
+	//	{station[5]},
+	//	{station[6]},
+	//	{station[7]},
+	//	{station[8]},
+	//}
+	//valueRange5 := "J20:J28"
+	//values5 := [][]interface{}{
+	//	{count[0]},
+	//	{count[1]},
+	//	{count[2]},
+	//	{count[3]},
+	//	{count[4]},
+	//	{count[5]},
+	//	{count[6]},
+	//	{count[7]},
+	//	{count[8]},
+	//}
+	//valueRange6 := "L20:L28"
+	//values6 := [][]interface{}{
+	//	{price[0]},
+	//	{price[1]},
+	//	{price[2]},
+	//	{price[3]},
+	//	{price[4]},
+	//	{price[5]},
+	//	{price[6]},
+	//	{price[7]},
+	//	{price[8]},
+	//}
 
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
 		Data: []*sheets.ValueRange{
 			{
-				Range:          valueRange1,
+				Range:          "N4",
 				MajorDimension: "ROWS",
-				Values:         values1,
+				Values: [][]interface{}{
+					{billDate},
+				},
 			},
 			{
-				Range:          valueRange2,
+				Range:          "M15",
 				MajorDimension: "ROWS",
-				Values:         values2,
+				Values: [][]interface{}{
+					{payDate},
+				},
 			},
 			{
-				Range:          valueRange3,
+				Range:          "J18",
 				MajorDimension: "ROWS",
-				Values:         values3,
+				Values: [][]interface{}{
+					{workHours},
+				},
 			},
 			{
-				Range:          valueRange4,
+				Range:          "A20:A28",
 				MajorDimension: "ROWS",
-				Values:         values4,
+				Values: [][]interface{}{
+					{station[0]},
+					{station[1]},
+					{station[2]},
+					{station[3]},
+					{station[4]},
+					{station[5]},
+					{station[6]},
+					{station[7]},
+					{station[8]},
+				},
 			},
 			{
-				Range:          valueRange5,
+				Range:          "J20:J28",
 				MajorDimension: "ROWS",
-				Values:         values5,
+				Values: [][]interface{}{
+					{count[0]},
+					{count[1]},
+					{count[2]},
+					{count[3]},
+					{count[4]},
+					{count[5]},
+					{count[6]},
+					{count[7]},
+					{count[8]},
+				},
 			},
 			{
-				Range:          valueRange6,
+				Range:          "L20:L28",
 				MajorDimension: "ROWS",
-				Values:         values6,
+				Values: [][]interface{}{
+					{price[0]},
+					{price[1]},
+					{price[2]},
+					{price[3]},
+					{price[4]},
+					{price[5]},
+					{price[6]},
+					{price[7]},
+					{price[8]},
+				},
 			},
 		},
 	}
