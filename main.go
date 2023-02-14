@@ -72,18 +72,15 @@ func main() {
 	}
 
 	var (
-		station [][]interface{}
+		station []string
 		count   []string
 		price   []string
 	)
 
 	for _, s := range trsptExpnss.Sheets {
 		for _, row := range s.Data[0].RowData {
-			staion := [][]interface{}{
-				{station},
-				{fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
-					row.Values[2].FormattedValue)},
-			}
+			station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+				row.Values[2].FormattedValue))
 			count = append(count, row.Values[3].FormattedValue)
 			price = append(price, row.Values[4].FormattedValue)
 		}
