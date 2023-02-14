@@ -32,9 +32,9 @@ func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*she
 // TODO: スプレットシートのタイトルを変更できるようにする。
 // TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("env/spreadsheet.env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Error loading .env file: %s", err)
 	}
 
 	now := time.Now()
@@ -51,13 +51,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
-	readRange1 := fmt.Sprintf("大村 %s!C9", billMonth)      // 勤務時間
-	readRange2 := fmt.Sprintf("大村 %s!A20:E28", billMonth) // 交通費情報 (多めにセルを指定しておく)
-
 	// スプレットシートの ID を読み込む。ID1 が読み込み、ID2 が書き込み
 	spreadsheetID1 := os.Getenv("ID1")
 	spreadsheetID2 := os.Getenv("ID2")
+
+	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
+	readRange1 := fmt.Sprintf("大村 %s!C9", billMonth)      // 勤務時間
+	readRange2 := fmt.Sprintf("大村 %s!A20:E28", billMonth) // 交通費情報 (多めにセルを指定しておく)
 
 	// 勤務時間を取得
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
