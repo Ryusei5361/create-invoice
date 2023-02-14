@@ -6,6 +6,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 	"log"
+	"main/env"
 	"strconv"
 	"strings"
 	"time"
@@ -45,13 +46,13 @@ func main() {
 	//fmt.Printf("%T\n", readRange1)
 
 	// 勤務時間を取得
-	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
+	wrkHr, err := GetValuesInSpreadSheet(srv, env.SpreadsheetID1, readRange1)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// 交通費の情報を取得
-	trsptExpnss, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange2)
+	trsptExpnss, err := GetValuesInSpreadSheet(srv, env.SpreadsheetID2, readRange2)
 	if err != nil {
 		log.Fatal(err)
 	}
