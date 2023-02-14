@@ -11,12 +11,6 @@ import (
 	"time"
 )
 
-// 読み込むスプレットシートID
-var spreadsheetID1 = "1SAwRc11TMl9fc8243Es0HvL8ZK3SHa6nEyTprCBC6Bk"
-
-// 書き込むスプレットシートID
-var spreadsheetID2 = "1jo4DVvChI5sNXFlyUhqF8oSmfTVyiryhiJy6KHkd_xw"
-
 func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*sheets.Spreadsheet, error) {
 	resp, err := srv.Spreadsheets.Get(spreadsheetID).IncludeGridData(true).Ranges(rg).Do()
 	if err != nil {
@@ -28,6 +22,7 @@ func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*she
 // TODO: スプレットシートのタイトルを変更できるようにする。
 // TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
 func main() {
+	//os.Setenv(spreadsheetID1, "")
 
 	now := time.Now()
 	// 請求日
