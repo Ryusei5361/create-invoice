@@ -21,29 +21,27 @@ func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*she
 	return resp, nil
 }
 
-//func init() {
-//	//fmt.Println("init")
-//	err := godotenv.Load()
-//	if err != nil {
-//		log.Fatal("Error loading .env file")
-//	}
-//}
-
-// TODO: スプレットシートのタイトルを変更できるようにする。
-// TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
-func main() {
+func init() {
+	fmt.Println("init")
 	err := godotenv.Load("env/spreadsheet.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
+}
+
+// TODO: スプレットシートのタイトルを変更できるようにする。
+// TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
+func main() {
 
 	now := time.Now()
 	// 請求日
-	billDate := fmt.Sprintf("%d/%d/%d", now.Year(), int(now.Month()), now.Day())
+	billDate := fmt.Sprintf("%d/0%d/%d", now.Year(), now.Month(), now.Day())
 	// 請求月
-	billMonth := fmt.Sprintf("%d/0%d", now.Year(), int(now.Month()))
+	billMonth := fmt.Sprintf("%d/0%d", now.Year(), now.Month())
 	// 給料日
 	payDate := fmt.Sprintf("%s/15", billMonth)
+
+	fmt.Println(billMonth)
 
 	// コンストラクタ?を作成
 	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
@@ -66,9 +64,9 @@ func main() {
 	}
 
 	// 交通費の情報を取得
-	trsptExpnss, err := GetValuesInSpreadSheet(srv, spreadsheetID2, readRange2)
+	trsptExpnss, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange2)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Can't get value: %w", err)
 	}
 
 	// スプレットシートから読み込んだセルの値、今回だと勤務時間
@@ -95,7 +93,6 @@ func main() {
 			price = append(price, row.Values[4].FormattedValue)
 		}
 	}
-	//fmt.Println(station)
 
 	//sprdSht := &sheets.BatchUpdateSpreadsheetRequest{
 	//	Properties: &sheets.SpreadsheetProperties{
