@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 	"log"
-	"main/env"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -20,10 +21,21 @@ func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*she
 	return resp, nil
 }
 
+//func init() {
+//	//fmt.Println("init")
+//	err := godotenv.Load()
+//	if err != nil {
+//		log.Fatal("Error loading .env file")
+//	}
+//}
+
 // TODO: スプレットシートのタイトルを変更できるようにする。
 // TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
 func main() {
-	//os.Setenv(spreadsheetID1, "")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	now := time.Now()
 	// 請求日
@@ -43,16 +55,18 @@ func main() {
 	readRange1 := fmt.Sprintf("大村 %s!C9", billMonth)      // 勤務時間
 	readRange2 := fmt.Sprintf("大村 %s!A20:E28", billMonth) // 交通費情報 (多めにセルを指定しておく)
 
-	//fmt.Printf("%T\n", readRange1)
+	// スプレットシートの ID を読み込む。ID1 が読み込み、ID2 が書き込み
+	spreadsheetID1 := os.Getenv("ID1")
+	spreadsheetID2 := os.Getenv("ID2")
 
 	// 勤務時間を取得
-	wrkHr, err := GetValuesInSpreadSheet(srv, env.SpreadsheetID1, readRange1)
+	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// 交通費の情報を取得
-	trsptExpnss, err := GetValuesInSpreadSheet(srv, env.SpreadsheetID2, readRange2)
+	trsptExpnss, err := GetValuesInSpreadSheet(srv, spreadsheetID2, readRange2)
 	if err != nil {
 		log.Fatal(err)
 	}
