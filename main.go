@@ -76,18 +76,32 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	station := [][]interface{}{
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+	}
+
 	var (
-		station []string
-		count   []string
-		price   []string
+		count []string
+		price []string
 	)
+	//fmt.Println(station)
 
 	for _, s := range trsptExpnss.Sheets {
-		for _, row := range s.Data[0].RowData {
-			station = append(station, fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
+		for i, row := range s.Data[0].RowData {
+			//if row.Values[0].FormattedValue != "" {
+			station[i] = append(station[i], fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
 				row.Values[2].FormattedValue))
 			count = append(count, row.Values[3].FormattedValue)
 			price = append(price, row.Values[4].FormattedValue)
+			//}
 		}
 	}
 
@@ -111,17 +125,7 @@ func main() {
 	//	{workHours},
 	//}
 	//valueRange4 := "A20:A28"
-	//values4 := [][]interface{}{
-	//	{station[0]},
-	//	{station[1]},
-	//	{station[2]},
-	//	{station[3]},
-	//	{station[4]},
-	//	{station[5]},
-	//	{station[6]},
-	//	{station[7]},
-	//	{station[8]},
-	//}
+	//values4 := station
 	//valueRange5 := "J20:J28"
 	//values5 := [][]interface{}{
 	//	{count[0]},
@@ -146,6 +150,8 @@ func main() {
 	//	{price[7]},
 	//	{price[8]},
 	//}
+	//values4[0] = append(values4[0], "test")
+	//fmt.Println(values4)
 
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
@@ -174,17 +180,7 @@ func main() {
 			{
 				Range:          "A20:A28",
 				MajorDimension: "ROWS",
-				Values: [][]interface{}{
-					{station[0]},
-					{station[1]},
-					{station[2]},
-					{station[3]},
-					{station[4]},
-					{station[5]},
-					{station[6]},
-					{station[7]},
-					{station[8]},
-				},
+				Values:         station,
 			},
 			{
 				Range:          "J20:J28",
