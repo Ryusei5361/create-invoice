@@ -22,7 +22,6 @@ func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*she
 }
 
 func init() {
-	fmt.Println("init")
 	err := godotenv.Load("env/spreadsheet.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
@@ -40,8 +39,6 @@ func main() {
 	billMonth := fmt.Sprintf("%d/0%d", now.Year(), now.Month())
 	// 給料日
 	payDate := fmt.Sprintf("%s/15", billMonth)
-
-	fmt.Println(billMonth)
 
 	// コンストラクタ?を作成
 	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
