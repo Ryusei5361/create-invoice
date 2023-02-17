@@ -7,6 +7,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -174,7 +175,7 @@ func main() {
 				Range:          "J18",
 				MajorDimension: "ROWS",
 				Values: [][]interface{}{
-					{workHours},
+					{math.Ceil(workHours)},
 				},
 			},
 			{
