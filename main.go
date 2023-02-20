@@ -77,32 +77,21 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	station := [][]interface{}{
-		{},
-		{},
-		{},
-		{},
-		{},
-		{},
-		{},
-		{},
-		{},
-	}
+	// 交通費情報の長さ
+	trafficlenght := len(trsptExpnss.Sheets[0].Data[0].RowData)
 
-	var (
-		count []string
-		price []string
-	)
-	//fmt.Println(station)
+	// 駅名、回数、値段の変数
+	station := make([][]interface{}, trafficlenght, trafficlenght)
+	count := make([][]interface{}, trafficlenght, trafficlenght)
+	price := make([][]interface{}, trafficlenght, trafficlenght)
 
+	// 駅名、回数、値段を変数に格納
 	for _, s := range trsptExpnss.Sheets {
 		for i, row := range s.Data[0].RowData {
-			//if row.Values[0].FormattedValue != "" {
 			station[i] = append(station[i], fmt.Sprintf("%v %v %v", row.Values[0].FormattedValue, row.Values[1].FormattedValue,
 				row.Values[2].FormattedValue))
-			count = append(count, row.Values[3].FormattedValue)
-			price = append(price, row.Values[4].FormattedValue)
-			//}
+			count[i] = append(count[i], row.Values[3].FormattedValue)
+			price[i] = append(price[i], row.Values[4].FormattedValue)
 		}
 	}
 
@@ -112,48 +101,7 @@ func main() {
 	//	},
 	//}
 
-	// 更新範囲と更新値の指定
-	//valueRange1 := "N4"
-	//values1 := [][]interface{}{
-	//	{billDate},
-	//}
-	//valueRange2 := "M15"
-	//values2 := [][]interface{}{
-	//	{payDate},
-	//}
-	//valueRange3 := "J18"
-	//values3 := [][]interface{}{
-	//	{workHours},
-	//}
-	//valueRange4 := "A20:A28"
-	//values4 := station
-	//valueRange5 := "J20:J28"
-	//values5 := [][]interface{}{
-	//	{count[0]},
-	//	{count[1]},
-	//	{count[2]},
-	//	{count[3]},
-	//	{count[4]},
-	//	{count[5]},
-	//	{count[6]},
-	//	{count[7]},
-	//	{count[8]},
-	//}
-	//valueRange6 := "L20:L28"
-	//values6 := [][]interface{}{
-	//	{price[0]},
-	//	{price[1]},
-	//	{price[2]},
-	//	{price[3]},
-	//	{price[4]},
-	//	{price[5]},
-	//	{price[6]},
-	//	{price[7]},
-	//	{price[8]},
-	//}
-	//values4[0] = append(values4[0], "test")
-	//fmt.Println(values4)
-
+	// スプレットシートに書き込むための範囲と値
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
 		Data: []*sheets.ValueRange{
@@ -186,38 +134,18 @@ func main() {
 			{
 				Range:          "J20:J28",
 				MajorDimension: "ROWS",
-				Values: [][]interface{}{
-					{count[0]},
-					{count[1]},
-					{count[2]},
-					{count[3]},
-					{count[4]},
-					{count[5]},
-					{count[6]},
-					{count[7]},
-					{count[8]},
-				},
+				Values:         count,
 			},
 			{
 				Range:          "L20:L28",
 				MajorDimension: "ROWS",
-				Values: [][]interface{}{
-					{price[0]},
-					{price[1]},
-					{price[2]},
-					{price[3]},
-					{price[4]},
-					{price[5]},
-					{price[6]},
-					{price[7]},
-					{price[8]},
-				},
+				Values:         price,
 			},
 		},
 	}
 
+	// スプレットシートに値を書き込む
 	_, err = srv.Spreadsheets.Values.BatchUpdate(spreadsheetID2, rb).Do()
-	//_, err = srv.Spreadsheets.Values.BatchUpdate(spreadsheetID2, sprdSht).Do()
 	if err != nil {
 		return
 	}
