@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -14,7 +15,7 @@ import (
 	"time"
 )
 
-const name = "阿部"
+//const name = "阿部"
 
 func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*sheets.Spreadsheet, error) {
 	resp, err := srv.Spreadsheets.Get(spreadsheetID).IncludeGridData(true).Ranges(rg).Do()
@@ -34,6 +35,11 @@ func init() {
 // TODO: スプレットシートのタイトルを変更できるようにする。
 // TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
 func main() {
+	//
+	sc := bufio.NewScanner(os.Stdin)
+	fmt.Print("名前を入力してください\n>>> ")
+	sc.Scan()
+	name := sc.Text()
 
 	now := time.Now()
 	// 請求日
