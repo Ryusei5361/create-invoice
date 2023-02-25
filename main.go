@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+const name = "阿部"
+
 func GetValuesInSpreadSheet(srv *sheets.Service, spreadsheetID, rg string) (*sheets.Spreadsheet, error) {
 	resp, err := srv.Spreadsheets.Get(spreadsheetID).IncludeGridData(true).Ranges(rg).Do()
 	if err != nil {
@@ -52,8 +54,8 @@ func main() {
 	spreadsheetID2 := os.Getenv("ID2")
 
 	// シートとセルを指定、範囲で指定する場合は A1:B6 のようにする
-	readRange1 := fmt.Sprintf("大村 %s!C9", billMonth)      // 勤務時間
-	readRange2 := fmt.Sprintf("大村 %s!A20:E28", billMonth) // 交通費情報 (多めにセルを指定しておく)
+	readRange1 := fmt.Sprintf("%s %s!C9", name, billMonth)      // 勤務時間
+	readRange2 := fmt.Sprintf("%s %s!A20:E28", name, billMonth) // 交通費情報 (多めにセルを指定しておく)
 
 	// 勤務時間を取得
 	wrkHr, err := GetValuesInSpreadSheet(srv, spreadsheetID1, readRange1)
@@ -106,38 +108,38 @@ func main() {
 		ValueInputOption: "USER_ENTERED",
 		Data: []*sheets.ValueRange{
 			{
-				Range:          "N4",
+				Range:          name + "!N4",
 				MajorDimension: "ROWS",
 				Values: [][]interface{}{
 					{billDate},
 				},
 			},
 			{
-				Range:          "M15",
+				Range:          name + "!M15",
 				MajorDimension: "ROWS",
 				Values: [][]interface{}{
 					{payDate},
 				},
 			},
 			{
-				Range:          "J18",
+				Range:          name + "!J18",
 				MajorDimension: "ROWS",
 				Values: [][]interface{}{
 					{math.Ceil(workHours)},
 				},
 			},
 			{
-				Range:          "A20:A28",
+				Range:          name + "!A20:A28",
 				MajorDimension: "ROWS",
 				Values:         station,
 			},
 			{
-				Range:          "J20:J28",
+				Range:          name + "!J20:J28",
 				MajorDimension: "ROWS",
 				Values:         count,
 			},
 			{
-				Range:          "L20:L28",
+				Range:          name + "!L20:L28",
 				MajorDimension: "ROWS",
 				Values:         price,
 			},
