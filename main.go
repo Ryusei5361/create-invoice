@@ -35,10 +35,11 @@ func init() {
 // TODO: スプレットシートのタイトルを変更できるようにする。
 // TODO: 交通費の情報がいくつあるか指定しなくても持ってこれて、書き込めるようにしたい。
 func main() {
-	//
+	// 入力を受け付ける
 	sc := bufio.NewScanner(os.Stdin)
 	fmt.Print("名前を入力してください\n>>> ")
 	sc.Scan()
+	// 誰の請求書か
 	name := sc.Text()
 
 	now := time.Now()
