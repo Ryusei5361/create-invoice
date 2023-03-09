@@ -46,9 +46,9 @@ func main() {
 	// 請求日
 	billDate := fmt.Sprintf("%d/0%d/%d", now.Year(), now.Month(), now.Day())
 	// 請求月
-	billMonth := fmt.Sprintf("%d/0%d", now.Year(), now.Month())
+	billMonth := fmt.Sprintf("%d/0%d", now.Year(), now.Month()-1)
 	// 給料日
-	payDate := fmt.Sprintf("%s/15", billMonth)
+	payDate := fmt.Sprintf("%d/%d/15", now.Year(), now.Month())
 
 	// コンストラクタ?を作成
 	srv, err := sheets.NewService(context.TODO(), option.WithCredentialsFile("credentials/secret.json"))
@@ -125,7 +125,7 @@ func main() {
 				Range:          name + "!M15",
 				MajorDimension: "ROWS",
 				Values: [][]interface{}{
-					{payDate},
+					{"お支払い期限: " + payDate},
 				},
 			},
 			{
