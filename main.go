@@ -104,12 +104,6 @@ func main() {
 		}
 	}
 
-	//sprdSht := &sheets.BatchUpdateSpreadsheetRequest{
-	//	Properties: &sheets.SpreadsheetProperties{
-	//		Title: "New Spreadsheet", // スプレッドシートの名前
-	//	},
-	//}
-
 	// スプレットシートに書き込むための範囲と値
 	rb := &sheets.BatchUpdateValuesRequest{
 		ValueInputOption: "USER_ENTERED",
@@ -156,6 +150,6 @@ func main() {
 	// スプレットシートに値を書き込む
 	_, err = srv.Spreadsheets.Values.BatchUpdate(spreadsheetID2, rb).Do()
 	if err != nil {
-		return
+		log.Fatalln(err)
 	}
 }
